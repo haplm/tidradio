@@ -1,0 +1,41 @@
+<div style="display: flex; gap: 20px;">
+    <div style="flex: 1;">
+        <h3>Power Table VHF</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Index</th>
+                    <th>Value</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for value in powerTableVHF %}
+                <tr>
+                    <td>{{ loop.index0 }}</td>
+                    <td>{{ value }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div style="flex: 1;">
+        <h3>Power Table UHF</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Index</th>
+                    <th>Value</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for value in powerTableUHF %}
+                <tr>
+                    <td>{{ loop.index0 }}</td>
+                    <td>{{ value }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>

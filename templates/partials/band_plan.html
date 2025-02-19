@@ -1,0 +1,28 @@
+<table>
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>Start Freq</th>
+            <th>End Freq</th>
+            <th>Max Power</th>
+            <th>TX Allowed</th>
+            <th>Wrap</th>
+            <th>Modulation</th>
+            <th>Bandwidth</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for plan in parsed.bandPlans %}
+        <tr>
+            <td>{{ loop.index }}</td>
+            <td>{{ "%.5f"|format(plan.startFreq/100000) }}</td>
+            <td>{{ "%.5f"|format(plan.endFreq/100000) }}</td>
+            <td>{{ plan.maxPower }}</td>
+            <td>{{ plan.bits.txAllowed }}</td>
+            <td>{{ plan.bits.wrap }}</td>
+            <td>{{ plan.bits.modulation }}</td>
+            <td>{{ plan.bits.bandwidth }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>

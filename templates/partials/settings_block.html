@@ -1,0 +1,86 @@
+<table>
+    <thead>
+        <tr>
+            <th>Field</th>
+            <th>Value</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>magic (checksum)</td>
+            <td>
+                0x{{ "%04X"|format(settingsBlock.magic) }}
+                {% if validation.valid %}
+                    <span style="color: green;">(Valid)</span>
+                {% else %}
+                    <span style="color: red;">(Invalid)</span>
+                {% endif %}
+            </td>
+        </tr>
+        <tr><td>squelch</td><td>{{ settingsBlock.squelch }}</td></tr>
+        <tr><td>dualWatch</td><td>{{ settingsBlock.dualWatch }}</td></tr>
+        <tr><td>autoFloor</td><td>{{ settingsBlock.autoFloor }}</td></tr>
+        <tr><td>activeVfo</td><td>{{ settingsBlock.activeVfo }}</td></tr>
+        <tr><td>step</td><td>{{ settingsBlock.step }}</td></tr>
+        <tr><td>rxSplit</td><td>{{ settingsBlock.rxSplit }}</td></tr>
+        <tr><td>txSplit</td><td>{{ settingsBlock.txSplit }}</td></tr>
+        <tr><td>pttMode</td><td>{{ settingsBlock.pttMode }}</td></tr>
+        <tr><td>txModMeter</td><td>{{ settingsBlock.txModMeter }}</td></tr>
+        <tr><td>micGain</td><td>{{ settingsBlock.micGain }}</td></tr>
+        <tr><td>txDeviation</td><td>{{ settingsBlock.txDeviation }}</td></tr>
+        <tr><td>xtal671</td><td>{{ settingsBlock.xtal671 }}</td></tr>
+        <tr><td>battStyle</td><td>{{ settingsBlock.battStyle }}</td></tr>
+        <tr><td>scanRange</td><td>{{ settingsBlock.scanRange }}</td></tr>
+        <tr><td>scanPersist</td><td>{{ settingsBlock.scanPersist }}</td></tr>
+        <tr><td>scanResume</td><td>{{ settingsBlock.scanResume }}</td></tr>
+        <tr><td>ultraScan</td><td>{{ settingsBlock.ultraScan }}</td></tr>
+        <tr><td>toneMonitor</td><td>{{ settingsBlock.toneMonitor }}</td></tr>
+        <tr><td>lcdBrightness</td><td>{{ settingsBlock.lcdBrightness }}</td></tr>
+        <tr><td>lcdTimeout</td><td>{{ settingsBlock.lcdTimeout }}</td></tr>
+        <tr><td>breathe</td><td>{{ settingsBlock.breathe }}</td></tr>
+        <tr><td>dtmfDev</td><td>{{ settingsBlock.dtmfDev }}</td></tr>
+        <tr><td>gamma</td><td>{{ settingsBlock.gamma }}</td></tr>
+        <tr><td>repeaterTone</td><td>{{ settingsBlock.repeaterTone }}</td></tr>
+
+        <tr><td>vfoState[0]</td><td>
+            Group: {{ settingsBlock.vfoState[0].group }}<br>
+            Last Group: {{ settingsBlock.vfoState[0].lastGroup }}<br>
+            Group Mode Channels: {{ settingsBlock.vfoState[0].groupModeChannels }}<br>
+            Mode: {{ settingsBlock.vfoState[0].mode }}
+        </td></tr>
+        <tr><td>vfoState[1]</td><td>
+            Group: {{ settingsBlock.vfoState[1].group }}<br>
+            Last Group: {{ settingsBlock.vfoState[1].lastGroup }}<br>
+            Group Mode Channels: {{ settingsBlock.vfoState[1].groupModeChannels }}<br>
+            Mode: {{ settingsBlock.vfoState[1].mode }}
+        </td></tr>
+
+        <tr><td>keyLock</td><td>{{ settingsBlock.keyLock }}</td></tr>
+        <tr><td>bluetooth</td><td>{{ settingsBlock.bluetooth }}</td></tr>
+        <tr><td>powerSave</td><td>{{ settingsBlock.powerSave }}</td></tr>
+        <tr><td>keyTones</td><td>{{ settingsBlock.keyTones }}</td></tr>
+        <tr><td>ste</td><td>{{ settingsBlock.ste }}</td></tr>
+        <tr><td>rfGain</td><td>{{ settingsBlock.rfGain }}</td></tr>
+        <tr><td>sBarStyle</td><td>{{ settingsBlock.sBarStyle }}</td></tr>
+        <tr><td>sqNoiseLev</td><td>{{ settingsBlock.sqNoiseLev }}</td></tr>
+        <tr><td>lastFmtFreq</td><td>{{ settingsBlock.lastFmtFreq }}</td></tr>
+        <tr><td>vox</td><td>{{ settingsBlock.vox }}</td></tr>
+        <tr><td>voxTail</td><td>{{ settingsBlock.voxTail }}</td></tr>
+        <tr><td>txTimeout</td><td>{{ settingsBlock.txTimeout }}</td></tr>
+        <tr><td>dimmer</td><td>{{ settingsBlock.dimmer }}</td></tr>
+        <tr><td>dtmfSpeed</td><td>{{ settingsBlock.dtmfSpeed }}</td></tr>
+        <tr><td>noiseGate</td><td>{{ settingsBlock.noiseGate }}</td></tr>
+        <tr><td>scanUpdate</td><td>{{ settingsBlock.scanUpdate }}</td></tr>
+        <tr><td>asl</td><td>{{ settingsBlock.asl }}</td></tr>
+        <tr><td>disableFmt</td><td>{{ settingsBlock.disableFmt }}</td></tr>
+        <tr><td>pin</td><td>{{ settingsBlock.pin }}</td></tr>
+        <tr><td>pinAction</td><td>{{ settingsBlock.pinAction }}</td></tr>
+        <tr><td>lcdInverted</td><td>{{ settingsBlock.lcdInverted }}</td></tr>
+        <tr><td>afFilters</td><td>{{ settingsBlock.afFilters }}</td></tr>
+        <tr><td>ifFreq</td><td>{{ settingsBlock.ifFreq }}</td></tr>
+        <tr><td>sBarAlwaysOn</td><td>{{ settingsBlock.sBarAlwaysOn }}</td></tr>
+        <tr><td>lockedVfo</td><td>{{ settingsBlock.lockedVfo }}</td></tr>
+        <tr><td>vfoLockActive</td><td>{{ settingsBlock.vfoLockActive }}</td></tr>
+        <tr><td>filler</td><td>{{ settingsBlock.filler }}</td></tr>
+    </tbody>
+</table>

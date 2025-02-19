@@ -1,0 +1,30 @@
+<table>
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>Start Freq</th>
+            <th>Range</th>
+            <th>Step</th>
+            <th>Resume</th>
+            <th>Persist</th>
+            <th>Modulation</th>
+            <th>Ultrascan</th>
+            <th>Label</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for preset in parsed.scanPresets %}
+        <tr>
+            <td>{{ loop.index }}</td>
+            <td>{{ "%.5f"|format(preset.startFreq/100000) }}</td>
+            <td>{{ preset.range }}</td>
+            <td>{{ preset.step }}</td>
+            <td>{{ preset.resume }}</td>
+            <td>{{ preset.persist }}</td>
+            <td>{{ preset.bits.modulation }}</td>
+            <td>{{ preset.bits.ultrascan }}</td>
+            <td>{{ preset.label.decode('ascii', errors='replace') }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
