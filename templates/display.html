@@ -1,77 +1,564 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Parsed EEPROM Data</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 20px;
-        }
-        th, td {
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: left;
-        }
-        th {
-            background-color: #f2f2f2;
-        }
-        tr:nth-child(even) {
-            background-color: #f9f9f9;
-        }
-    </style>
-</head>
-<body>
-    <h1>Parsed EEPROM Data</h1>
+{% extends "layout.html" %}
 
-    {% if not validation.valid %}
-    <div style="background-color: #fff3cd; padding: 10px; margin: 10px 0; border: 1px solid #ffeeba;">
-        <h3>Validation Warnings:</h3>
-        <ul>
-            {% for message in validation.messages %}
-            <li>{{ message }}</li>
+{% block content %}
+<div class="container mt-4">
+    <h1>EEPROM Data</h1>
+    
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category if category != 'message' else 'info' }}">
+                    {{ message }}
+                </div>
             {% endfor %}
-        </ul>
+        {% endif %}
+    {% endwith %}
+    
+    <!-- Tabs navigation -->
+    <ul class="nav nav-tabs mb-4" id="eepromTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="validation-tab" data-bs-toggle="tab" data-bs-target="#validation" type="button" role="tab" aria-controls="validation" aria-selected="true">Validation</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="vfo-tab" data-bs-toggle="tab" data-bs-target="#vfo" type="button" role="tab" aria-controls="vfo" aria-selected="false">VFO Information</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="settings-tab" data-bs-toggle="tab" data-bs-target="#settings" type="button" role="tab" aria-controls="settings" aria-selected="false">Settings</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="power-tab" data-bs-toggle="tab" data-bs-target="#power" type="button" role="tab" aria-controls="power" aria-selected="false">Power Tables</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="channels-tab" data-bs-toggle="tab" data-bs-target="#channels" type="button" role="tab" aria-controls="channels" aria-selected="false">Channels</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="debug-tab" data-bs-toggle="tab" data-bs-target="#debug" type="button" role="tab" aria-controls="debug" aria-selected="false">Debug</button>
+        </li>
+    </ul>
+    
+    <!-- Tab content -->
+    <div class="tab-content" id="eepromTabsContent">
+        <!-- Validation Results Tab -->
+        <div class="tab-pane fade show active" id="validation" role="tabpanel" aria-labelledby="validation-tab">
+            <div class="card">
+                <div class="card-header">
+                    <h2>Validation Results</h2>
+                </div>
+                <div class="card-body">
+                    <ul>
+                        {% for message in validation.messages %}
+                            <li>{{ message }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <!-- VFO Information Tab -->
+        <div class="tab-pane fade" id="vfo" role="tabpanel" aria-labelledby="vfo-tab">
+            <div class="card">
+                <div class="card-header">
+                    <h2>VFO Information</h2>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h3>VFO A</h3>
+                            <table class="table table-bordered">
+                                <tr>
+                                    <th>RX Frequency</th>
+                                    <td>{{ "%.5f"|format(parsed.vfoA.rxFreq/100000) }} MHz</td>
+                                </tr>
+                                <tr>
+                                    <th>TX Frequency</th>
+                                    <td>{{ "%.5f"|format(parsed.vfoA.txFreq/100000) }} MHz</td>
+                                </tr>
+                                <tr>
+                                    <th>Name</th>
+                                    <td>{{ parsed.vfoA.name.decode('ascii', errors='replace') }}</td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="col-md-6">
+                            <h3>VFO B</h3>
+                            <table class="table table-bordered">
+                                <tr>
+                                    <th>RX Frequency</th>
+                                    <td>{{ "%.5f"|format(parsed.vfoB.rxFreq/100000) }} MHz</td>
+                                </tr>
+                                <tr>
+                                    <th>TX Frequency</th>
+                                    <td>{{ "%.5f"|format(parsed.vfoB.txFreq/100000) }} MHz</td>
+                                </tr>
+                                <tr>
+                                    <th>Name</th>
+                                    <td>{{ parsed.vfoB.name.decode('ascii', errors='replace') }}</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Settings Tab -->
+        <div class="tab-pane fade" id="settings" role="tabpanel" aria-labelledby="settings-tab">
+            <div class="card">
+                <div class="card-header">
+                    <h2>Settings</h2>
+                </div>
+                <div class="card-body">
+                    <table class="table table-bordered">
+                        <tr>
+                            <th>Magic</th>
+                            <td>0x{{ "%04X"|format(parsed.settings.magic) }}</td>
+                        </tr>
+                        <tr>
+                            <th>Squelch</th>
+                            <td>{{ parsed.settings.squelch }}</td>
+                        </tr>
+                        <tr>
+                            <th>Dual Watch</th>
+                            <td>{{ parsed.settings.dualWatch }}</td>
+                        </tr>
+                        <tr>
+                            <th>Auto Floor</th>
+                            <td>{{ parsed.settings.autoFloor }}</td>
+                        </tr>
+                        <tr>
+                            <th>Active VFO</th>
+                            <td>{{ parsed.settings.activeVfo }}</td>
+                        </tr>
+                        <tr>
+                            <th>Step</th>
+                            <td>{{ parsed.settings.step }}</td>
+                        </tr>
+                        <tr>
+                            <th>RX Split</th>
+                            <td>{{ parsed.settings.rxSplit }}</td>
+                        </tr>
+                        <tr>
+                            <th>TX Split</th>
+                            <td>{{ parsed.settings.txSplit }}</td>
+                        </tr>
+                        <tr>
+                            <th>PTT Mode</th>
+                            <td>{{ parsed.settings.pttMode }}</td>
+                        </tr>
+                        <tr>
+                            <th>TX Mod Meter</th>
+                            <td>{{ parsed.settings.txModMeter }}</td>
+                        </tr>
+                        <tr>
+                            <th>Mic Gain</th>
+                            <td>{{ parsed.settings.micGain }}</td>
+                        </tr>
+                        <tr>
+                            <th>TX Deviation</th>
+                            <td>{{ parsed.settings.txDeviation }}</td>
+                        </tr>
+                        <tr>
+                            <th>XTAL 671</th>
+                            <td>{{ parsed.settings.xtal671 }}</td>
+                        </tr>
+                        <tr>
+                            <th>Battery Style</th>
+                            <td>{{ parsed.settings.battStyle }}</td>
+                        </tr>
+                        <tr>
+                            <th>Scan Range</th>
+                            <td>{{ parsed.settings.scanRange }}</td>
+                        </tr>
+                        <tr>
+                            <th>Scan Persist</th>
+                            <td>{{ parsed.settings.scanPersist }}</td>
+                        </tr>
+                        <tr>
+                            <th>Scan Resume</th>
+                            <td>{{ parsed.settings.scanResume }}</td>
+                        </tr>
+                        <tr>
+                            <th>Ultra Scan</th>
+                            <td>{{ parsed.settings.ultraScan }}</td>
+                        </tr>
+                        <tr>
+                            <th>Tone Monitor</th>
+                            <td>{{ parsed.settings.toneMonitor }}</td>
+                        </tr>
+                        <tr>
+                            <th>LCD Brightness</th>
+                            <td>{{ parsed.settings.lcdBrightness }}</td>
+                        </tr>
+                        <tr>
+                            <th>LCD Timeout</th>
+                            <td>{{ parsed.settings.lcdTimeout }}</td>
+                        </tr>
+                        <tr>
+                            <th>Breathe</th>
+                            <td>{{ parsed.settings.breathe }}</td>
+                        </tr>
+                        <tr>
+                            <th>DTMF Dev</th>
+                            <td>{{ parsed.settings.dtmfDev }}</td>
+                        </tr>
+                        <tr>
+                            <th>Gamma</th>
+                            <td>{{ parsed.settings.gamma }}</td>
+                        </tr>
+                        <tr>
+                            <th>Repeater Tone</th>
+                            <td>{{ parsed.settings.repeaterTone }}</td>
+                        </tr>
+                        <tr>
+                            <th>Key Lock</th>
+                            <td>{{ parsed.settings.keyLock }}</td>
+                        </tr>
+                        <tr>
+                            <th>Bluetooth</th>
+                            <td>{{ parsed.settings.bluetooth }}</td>
+                        </tr>
+                        <tr>
+                            <th>Power Save</th>
+                            <td>{{ parsed.settings.powerSave }}</td>
+                        </tr>
+                        <tr>
+                            <th>Key Tones</th>
+                            <td>{{ parsed.settings.keyTones }}</td>
+                        </tr>
+                        <tr>
+                            <th>STE</th>
+                            <td>{{ parsed.settings.ste }}</td>
+                        </tr>
+                        <tr>
+                            <th>RF Gain</th>
+                            <td>{{ parsed.settings.rfGain }}</td>
+                        </tr>
+                        <tr>
+                            <th>S-Bar Style</th>
+                            <td>{{ parsed.settings.sBarStyle }}</td>
+                        </tr>
+                        <tr>
+                            <th>Squelch Noise Level</th>
+                            <td>{{ parsed.settings.sqNoiseLev }}</td>
+                        </tr>
+                        <tr>
+                            <th>Last FM Frequency</th>
+                            <td>{{ "%.5f"|format(parsed.settings.lastFmtFreq/100000) }} MHz</td>
+                        </tr>
+                        <tr>
+                            <th>VOX</th>
+                            <td>{{ parsed.settings.vox }}</td>
+                        </tr>
+                        <tr>
+                            <th>VOX Tail</th>
+                            <td>{{ parsed.settings.voxTail }}</td>
+                        </tr>
+                        <tr>
+                            <th>TX Timeout</th>
+                            <td>{{ parsed.settings.txTimeout }}</td>
+                        </tr>
+                        <tr>
+                            <th>Dimmer</th>
+                            <td>{{ parsed.settings.dimmer }}</td>
+                        </tr>
+                        <tr>
+                            <th>DTMF Speed</th>
+                            <td>{{ parsed.settings.dtmfSpeed }}</td>
+                        </tr>
+                        <tr>
+                            <th>Noise Gate</th>
+                            <td>{{ parsed.settings.noiseGate }}</td>
+                        </tr>
+                        <tr>
+                            <th>Scan Update</th>
+                            <td>{{ parsed.settings.scanUpdate }}</td>
+                        </tr>
+                        <tr>
+                            <th>ASL</th>
+                            <td>{{ parsed.settings.asl }}</td>
+                        </tr>
+                        <tr>
+                            <th>Disable FMT</th>
+                            <td>{{ parsed.settings.disableFmt }}</td>
+                        </tr>
+                        <tr>
+                            <th>PIN</th>
+                            <td>{{ parsed.settings.pin }}</td>
+                        </tr>
+                        <tr>
+                            <th>PIN Action</th>
+                            <td>{{ parsed.settings.pinAction }}</td>
+                        </tr>
+                        <tr>
+                            <th>LCD Inverted</th>
+                            <td>{{ parsed.settings.lcdInverted }}</td>
+                        </tr>
+                        <tr>
+                            <th>AF Filters</th>
+                            <td>{{ parsed.settings.afFilters }}</td>
+                        </tr>
+                        <tr>
+                            <th>IF Frequency</th>
+                            <td>{{ parsed.settings.ifFreq }}</td>
+                        </tr>
+                        <tr>
+                            <th>S-Bar Always On</th>
+                            <td>{{ parsed.settings.sBarAlwaysOn }}</td>
+                        </tr>
+                        <tr>
+                            <th>Locked VFO</th>
+                            <td>{{ parsed.settings.lockedVfo }}</td>
+                        </tr>
+                        <tr>
+                            <th>VFO Lock Active</th>
+                            <td>{{ parsed.settings.vfoLockActive }}</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Power Tables Tab -->
+        <div class="tab-pane fade" id="power" role="tabpanel" aria-labelledby="power-tab">
+            <div class="card">
+                <div class="card-header">
+                    <h2>Power Tables</h2>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h3>VHF Power Table (Magic: 0x{{ "%02X"|format(parsed.powerTableVHF.magic) }})</h3>
+                            <div class="power-table">
+                                <table class="table table-sm table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th>Index</th>
+                                            <th>Value</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for i in range(255) %}
+                                            <tr>
+                                                <td>{{ i + 1 }}</td>
+                                                <td>{{ vhf_power_table[i] }}</td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <h3>UHF Power Table (Magic: 0x{{ "%02X"|format(parsed.powerTableUHF.magic) }})</h3>
+                            <div class="power-table">
+                                <table class="table table-sm table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th>Index</th>
+                                            <th>Value</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for i in range(255) %}
+                                            <tr>
+                                                <td>{{ i + 1 }}</td>
+                                                <td>{{ uhf_power_table[i] }}</td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Channels Tab -->
+        <div class="tab-pane fade" id="channels" role="tabpanel" aria-labelledby="channels-tab">
+            <div class="card">
+                <div class="card-header">
+                    <h2>Channel Information</h2>
+                </div>
+                <div class="card-body">
+                    {% include 'partials/channel_info.html' %}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Debug Tab -->
+        <div class="tab-pane fade" id="debug" role="tabpanel" aria-labelledby="debug-tab">
+            <div class="card">
+                <div class="card-header">
+                    <h2>Raw Parsed Data</h2>
+                </div>
+                <div class="card-body">
+                    <div class="debug-controls mb-3">
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="checkbox" id="expandAll" value="option1">
+                            <label class="form-check-label" for="expandAll">Expand All</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="checkbox" id="showHex" value="option2">
+                            <label class="form-check-label" for="showHex">Show Hex Values</label>
+                        </div>
+                    </div>
+                    <div class="debug-container">
+                        <pre class="debug-output" id="debugOutput">{{ debug_data }}</pre>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-    {% endif %}
+</div>
 
-    <h2>Channel Info</h2>
-    {% include 'partials/channel_info.html' %}
-    
-    <h2>Settings Block</h2>
-    {% with settingsBlock=parsed.settings %}
-        {% include 'partials/settings_block.html' %}
-    {% endwith %}
-    
-    <h2>Band Plans</h2>
-    {% include 'partials/band_plan.html' %}
-    
-    <h2>Scan Presets</h2>
-    {% include 'partials/scan_preset.html' %}
-    
-    <h2>DTMF Presets</h2>
-    {% for preset in parsed.dtmfPresets %}
-        {% with dtmfSequence=preset.sequence %}
-            {% include 'partials/dtmf_sequence.html' %}
-        {% endwith %}
-    {% endfor %}
-    
-    <h2>Power Tables</h2>
-    {% with powerTableVHF=parsed.powerTableVHF, powerTableUHF=parsed.powerTableUHF %}
-        {% include 'partials/power_table.html' %}
-    {% endwith %}
-    
-    <a href="{{ url_for('index') }}">Upload another file</a>
+<style>
+.power-table {
+    max-height: 400px;
+    overflow-y: auto;
+}
+.power-table table {
+    font-family: monospace;
+    font-size: 0.8rem;
+}
+.power-table td, .power-table th {
+    padding: 2px 4px;
+    text-align: center;
+}
+.nav-tabs .nav-link {
+    font-weight: 500;
+    color: #495057;
+}
+.nav-tabs .nav-link.active {
+    color: #007bff;
+    border-color: #dee2e6 #dee2e6 #fff;
+}
+.card {
+    border: none;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+.debug-container {
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    padding: 15px;
+    max-height: 600px;
+    overflow-y: auto;
+}
+.debug-output {
+    font-family: monospace;
+    font-size: 0.9rem;
+    white-space: pre-wrap;
+    margin: 0;
+}
+.collapsed {
+    display: none;
+}
+.expander {
+    cursor: pointer;
+    color: #007bff;
+}
+.expander:hover {
+    text-decoration: underline;
+}
+.hex-value {
+    color: #28a745;
+}
+</style>
 
-    <!-- Debug output -->
-    <pre>
-        {{ parsed }}
-    </pre>
-
-</body>
-</html> 
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Debug tab controls
+    const expandAllCheckbox = document.getElementById('expandAll');
+    const showHexCheckbox = document.getElementById('showHex');
+    const debugOutput = document.getElementById('debugOutput');
+    
+    // Store the original debug data
+    const originalDebugData = debugOutput.textContent;
+    
+    // Function to process and format the debug data
+    function processDebugData() {
+        const expandAll = expandAllCheckbox.checked;
+        const showHex = showHexCheckbox.checked;
+        
+        // Start with the original data
+        let processedData = originalDebugData;
+        
+        if (showHex) {
+            // Convert numbers to include hex representation
+            processedData = processedData.replace(/(\b\d+\b)/g, function(match) {
+                const num = parseInt(match, 10);
+                if (!isNaN(num) && num > 9) {
+                    return `${match} (0x${num.toString(16).toUpperCase()})`;
+                }
+                return match;
+            });
+        }
+        
+        if (expandAll) {
+            // Replace array summaries with expanded content
+            processedData = processedData.replace(/\[\d+ (values|channels)\]/g, '[...]');
+        }
+        
+        // Update the debug output
+        debugOutput.textContent = processedData;
+    }
+    
+    // Add event listeners to the checkboxes
+    if (expandAllCheckbox && showHexCheckbox && debugOutput) {
+        expandAllCheckbox.addEventListener('change', processDebugData);
+        showHexCheckbox.addEventListener('change', processDebugData);
+    }
+    
+    // Initialize with collapsible sections
+    const debugLines = debugOutput.textContent.split('\n');
+    let collapsibleOutput = '';
+    let indentLevel = 0;
+    let collapsedSections = {};
+    
+    for (let i = 0; i < debugLines.length; i++) {
+        const line = debugLines[i];
+        const nextLine = i < debugLines.length - 1 ? debugLines[i + 1] : '';
+        
+        // Check if this line starts a new section
+        if (line.includes('{') && !line.includes('}')) {
+            collapsibleOutput += `<div class="line"><span class="expander" data-section="${i}">+</span> ${line}</div>`;
+            collapsedSections[i] = true;
+            indentLevel++;
+        } 
+        // Check if this line ends a section
+        else if (line.includes('}') && !line.includes('{')) {
+            indentLevel--;
+            collapsibleOutput += `<div class="line">${line}</div>`;
+        }
+        // Regular line
+        else {
+            collapsibleOutput += `<div class="line">${line}</div>`;
+        }
+    }
+    
+    // Replace the debug output with the collapsible version
+    // debugOutput.innerHTML = collapsibleOutput;
+    
+    // Add click handlers for expanders
+    document.querySelectorAll('.expander').forEach(expander => {
+        expander.addEventListener('click', function() {
+            const sectionId = this.getAttribute('data-section');
+            const isCollapsed = collapsedSections[sectionId];
+            
+            // Toggle the section
+            if (isCollapsed) {
+                this.textContent = '-';
+                // Show the section
+                // ...
+            } else {
+                this.textContent = '+';
+                // Hide the section
+                // ...
+            }
+            
+            collapsedSections[sectionId] = !isCollapsed;
+        });
+    });
+});
+</script>
+{% endblock %} 

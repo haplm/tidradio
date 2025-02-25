@@ -1,40 +1,87 @@
-<table>
-    <thead>
-        <tr>
-            <th>#</th>
-            <th>Name</th>
-            <th>RX Freq</th>
-            <th>TX Freq</th>
-            <th>RX Tone</th>
-            <th>TX Tone</th>
-            <th>TX Power</th>
-            <th>Groups</th>
-            <th>Bandwidth</th>
-            <th>Modulation</th>
-            <th>Position</th>
-            <th>PTT ID</th>
-            <th>Reversed</th>
-            <th>Busy Lock</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for channel in parsed.memoryChannels %}
-        <tr>
-            <td>{{ loop.index }}</td>
-            <td>{{ channel.name.decode('ascii', errors='replace') }}</td>
-            <td>{{ "%.5f"|format(channel.rxFreq/100000) }}</td>
-            <td>{{ "%.5f"|format(channel.txFreq/100000) }}</td>
-            <td>{{ channel.rxSubTone }}</td>
-            <td>{{ channel.txSubTone }}</td>
-            <td>{{ channel.txPower }}</td>
-            <td>{{ format_group_letters(channel.groups.value) }}</td>
-            <td>{{ channel.bits.bandwidth }}</td>
-            <td>{{ channel.bits.modulation }}</td>
-            <td>{{ channel.bits.position }}</td>
-            <td>{{ channel.bits.pttID }}</td>
-            <td>{{ channel.bits.reversed }}</td>
-            <td>{{ channel.bits.busyLock }}</td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
+<form method="POST" id="channelForm">
+    <input type="hidden" name="channel_info" value="1">
+    <table>
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Name</th>
+                <th>RX Freq</th>
+                <th>TX Freq</th>
+                <th>RX Tone</th>
+                <th>TX Tone</th>
+                <th>TX Power</th>
+                <th>Groups</th>
+                <th>Bandwidth</th>
+                <th>Modulation</th>
+                <th>Position</th>
+                <th>PTT ID</th>
+                <th>Reversed</th>
+                <th>Busy Lock</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for channel in parsed.memoryChannels %}
+            <tr>
+                <td>{{ loop.index }}</td>
+                <td>{{ channel.name.decode('ascii', errors='replace') }}</td>
+                <td>{{ "%.5f"|format(channel.rxFreq/100000) }}</td>
+                <td>{{ "%.5f"|format(channel.txFreq/100000) }}</td>
+                <td>{{ channel.rxSubTone }}</td>
+                <td>{{ channel.txSubTone }}</td>
+                <td>{{ channel.txPower }}</td>
+                <td>{{ format_group_letters(channel.groups.value) }}</td>
+                <td>
+                    <input type="checkbox" 
+                           name="bandwidth_{{ loop.index0 }}" 
+                           value="1" 
+                           {% if channel.bits.bandwidth %}checked{% endif %}>
+                </td>
+                <td>{{ channel.bits.modulation }}</td>
+                <td>
+                    <input type="checkbox" 
+                           name="position_{{ loop.index0 }}" 
+                           value="1" 
+                           {% if channel.bits.position %}checked{% endif %}>
+                </td>
+                <td>{{ channel.bits.pttID }}</td>
+                <td>
+                    <input type="checkbox" 
+                           name="reversed_{{ loop.index0 }}" 
+                           value="1" 
+                           {% if channel.bits.reversed %}checked{% endif %}>
+                </td>
+                <td>
+                    <input type="checkbox" 
+                           name="busyLock_{{ loop.index0 }}" 
+                           value="1" 
+                           {% if channel.bits.busyLock %}checked{% endif %}>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <div style="margin-top: 20px; text-align: right;">
+        <button type="submit" class="btn btn-primary">Save All Changes</button>
+    </div>
+</form>
+
+<style>
+.btn-primary {
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.btn-primary:hover {
+    background-color: #0056b3;
+}
+
+td input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+}
+</style>

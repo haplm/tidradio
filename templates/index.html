@@ -1,23 +1,51 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>EEPROM Parser</title>
-</head>
-<body>
-    <h1>Upload EEPROM File</h1>
-    <form action="/" method="post" enctype="multipart/form-data">
-        <input type="file" name="file">
-        <input type="submit" value="Upload">
-    </form>
-    {% with messages = get_flashed_messages() %}
-      {% if messages %}
-        <ul>
-        {% for message in messages %}
-          <li>{{ message }}</li>
-        {% endfor %}
-        </ul>
-      {% endif %}
-    {% endwith %}
-</body>
-</html> 
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h2>Upload EEPROM File</h2>
+                </div>
+                <div class="card-body">
+                    {% with messages = get_flashed_messages() %}
+                        {% if messages %}
+                            {% for message in messages %}
+                                <div class="alert alert-warning">
+                                    {{ message }}
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                    {% endwith %}
+                    
+                    <form method="POST" enctype="multipart/form-data">
+                        <div class="mb-3">
+                            <label for="file" class="form-label">Select EEPROM file (.nfw)</label>
+                            <input type="file" class="form-control" id="file" name="file" accept=".nfw,.bin,.dat">
+                            <div class="form-text">Upload a TidRadio EEPROM file to view and edit its contents.</div>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Upload</button>
+                    </form>
+                </div>
+            </div>
+            
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h2>About</h2>
+                </div>
+                <div class="card-body">
+                    <p>This tool allows you to view and edit TidRadio EEPROM files. You can:</p>
+                    <ul>
+                        <li>View channel information</li>
+                        <li>Edit channel settings</li>
+                        <li>View power tables</li>
+                        <li>Validate EEPROM data</li>
+                    </ul>
+                    <p>All data is processed in your browser and on the server. No data is sent to third parties.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 
